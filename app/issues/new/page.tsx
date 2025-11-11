@@ -10,9 +10,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createIssueSchema } from '../../validationSchema';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import ErrorMessage from '../../components/ErrorMessage';
-
+import Spinner  from '../../components/Spinner';
 type IssueForm = z.infer<typeof createIssueSchema>;
 
 // interface IssueForm{
@@ -25,6 +25,8 @@ const NewIssuePage = () => {
         resolver: zodResolver(createIssueSchema)
     });
     const [error,setError] = useState('');
+    const[isSubmitting,setSubmitting] = useState(false);
+
   return (
     <div className='max-w-xl'>
         {error && <Callout.Root color='red' className='mb-5'>
@@ -32,9 +34,11 @@ const NewIssuePage = () => {
             </Callout.Root>}
         <form className='space-y-3' onSubmit={handleSubmit(async (data)=>{
             try{
+                setSubmitting(true);
                 await axios.post('/api/issues',data);
                 router.push('/issues');
             }catch(error){
+                setSubmitting(false);
                 setError('Failed to create issue. Please try again.');
             }
         })}>
@@ -45,7 +49,7 @@ const NewIssuePage = () => {
             <Controller name='description' control={control} render={({field})=><SimpleMDE placeholder="Description" {...field}/>}/>
             {/* {errors.description && <Text color='red' as='p'>{errors.description.message}</Text>} */}
             <ErrorMessage>{errors.description?.message}</ErrorMessage>
-            <Button>Submit New Issue</Button>
+            <Button disabled={isSubmitting}>Submit New Issue {isSubmitting && <Spinner/>}</Button>
         </form>
     </div>
   )
