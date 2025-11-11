@@ -19,6 +19,7 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 //     title:string;
 //     description:string;
 // }
+
 const NewIssuePage = () => {
     const router = useRouter();
     const {register,control,handleSubmit,formState: {errors}} = useForm<IssueForm>({
@@ -27,12 +28,7 @@ const NewIssuePage = () => {
     const [error,setError] = useState('');
     const[isSubmitting,setSubmitting] = useState(false);
 
-  return (
-    <div className='max-w-xl'>
-        {error && <Callout.Root color='red' className='mb-5'>
-            <Callout.Text>{error}</Callout.Text>
-            </Callout.Root>}
-        <form className='space-y-3' onSubmit={handleSubmit(async (data)=>{
+    const onSubmit = handleSubmit(async (data)=>{
             try{
                 setSubmitting(true);
                 await axios.post('/api/issues',data);
@@ -41,7 +37,14 @@ const NewIssuePage = () => {
                 setSubmitting(false);
                 setError('Failed to create issue. Please try again.');
             }
-        })}>
+        });
+        
+  return (
+    <div className='max-w-xl'>
+        {error && <Callout.Root color='red' className='mb-5'>
+            <Callout.Text>{error}</Callout.Text>
+            </Callout.Root>}
+        <form className='space-y-3' onSubmit={onSubmit}>
             <TextField.Root placeholder='Title' {...register('title')}>
             </TextField.Root>
             {/* {errors.title && <Text color='red' as='p'>{errors.title.message}</Text>} */}
