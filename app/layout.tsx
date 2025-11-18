@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "./NavBar"
+import NavBar from "./NavBar";
 import "@radix-ui/themes/styles.css";
 import { Theme, ThemePanel } from "@radix-ui/themes";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+import { ClientProviders } from "./ClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,9 +19,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 const inter = Inter({
-	subsets: ["latin"],
-	display: "swap",
-	variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -36,12 +38,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Theme accentColor="violet" grayColor="gray" radius="large">
-          <NavBar/>
-            <main className="p-5">
+        <ClientProviders>
+          <div>
+            <NavBar />
+            <main className="min-h-screen flex bg-white justify-center items-center">
               {children}
             </main>
-        </Theme>
+          </div>
+        </ClientProviders>
       </body>
     </html>
   );
